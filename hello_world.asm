@@ -1,19 +1,18 @@
-sectoin .bss              ; block starting sysmbol
-	; variables
+section .text
+	global _start     ; must be delcalred entry point for linker
+
+_start:     ; start here
+	mov edx, len       ; message length
+	mov ecx, msg       ; message to write
+	mov ebx, 1         ; file descriptor (stdout)
+	mov eax, 4         ; system call number (sys_write)
+	int 0x80           ; call kernel
+
+	mov eax, 1         ; system call number (sys_exit)
+	int 0x80           ; call kernel
 
 section .data             ; constants
-	hello: db "Hello World!", 10    ; string to print
-	helloLen: equ $-hello  ; length of string
+msg db 'Hello World!', 0xa    ; string to print
+len equ $ - msg  ; length of string
 
-section .text
-	global _start     ; entry point for linker
 
-	_start:     ; start here
-		mov rax, 1      ; 1 == sys_write
-		mov rdi, 1      ; 1 == stdout
-		mov rsi, hello  ; message to write
-		syscall         ; call kernel to execute
-		; end program
-		mov rax, 60     ; sys_exit
-		mov rdi, 0      ; error_code 0 (success)
-		syscall         ; call kernel to execute
